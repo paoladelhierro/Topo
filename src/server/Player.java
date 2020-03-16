@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * Player
+ * Player - Clase para los jugadores del juego
  */
 public class Player implements Serializable, Comparable<Player>{
 
@@ -59,6 +59,7 @@ public class Player implements Serializable, Comparable<Player>{
         return this.uid.equals(((Player) obj).uid);
     }
 
+    // Comparador por score
     public static class SortByScore implements Comparator<Player>{
         @Override
         public int compare(Player o1, Player o2) {

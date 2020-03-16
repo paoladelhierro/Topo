@@ -3,10 +3,10 @@ package server;
 import java.io.Serializable;
 
 /**
- * TCPComms
+ * TCPComms - Clase para manejar la comunicacion con el servidor TCP
  */
 public class TCPComms implements Serializable{
-
+    // Constantes publicas estaticas para identificar el tipo de peticion
     private static final long serialVersionUID = 1L;
     public static final int LOGIN_REQUEST = 1;
     public static final int LOGIN_FAIL = 1000;
@@ -14,7 +14,9 @@ public class TCPComms implements Serializable{
     public static final int LOGOFF_REQUEST = 2;
     public static final int FINISH_GAME = 3;
     
+    // Entero para identificar el tipo de solicitud
     private int type;
+    // Objeto serializable para la solicitud
     private Serializable payload;
 
     public TCPComms(int type, Serializable payload){
@@ -34,5 +36,19 @@ public class TCPComms implements Serializable{
      */
     public int getType() {
         return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(int type) {
+        this.type = type;
+    }
+    
+    /**
+     * @param payload the payload to set
+     */
+    public void setPayload(Serializable payload) {
+        this.payload = payload;
     }
 }

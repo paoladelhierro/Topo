@@ -6,9 +6,11 @@ package stress;
 public class Stresser {
 
     public static void main(String[] args) {
+        
         int n = 5;
-        int TCPPort = 8888;
         String TCPHost = "localhost";
+        int TCPPort = 8888;
+        
         Thread t;
         String id;
 

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * GameUpdate
+ * GameUpdate - Clase para encapsular las actualizaciones del juego
  */
 public class GameUpdate implements Serializable{
 
@@ -33,6 +33,7 @@ public class GameUpdate implements Serializable{
 
     @Override
     public String toString() {
+        // Mensaje que se envia por multicast
         return Integer.toString(nextPos) + "&" + scoreboard.toString();
     }
 }
