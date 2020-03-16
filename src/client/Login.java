@@ -5,6 +5,16 @@
  */
 package client;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.DatagramSocket;
+import java.net.MulticastSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import server.TCPComms;
+
 /**
  *
  * @author paoladelhierro
@@ -27,19 +37,120 @@ public class Login extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        username = new javax.swing.JTextField();
+        login = new javax.swing.JButton();
+        usrAlert = new javax.swing.JLabel();
+
+        jLabel1.setFont(new java.awt.Font("Shree Devanagari 714", 0, 24)); // NOI18N
+        jLabel1.setText("¡Pégale al Monstruo!");
+        jLabel1.setToolTipText("");
+        jLabel1.setSize(new java.awt.Dimension(50, 20));
+
+        jLabel2.setFont(new java.awt.Font("Shree Devanagari 714", 0, 13)); // NOI18N
+        jLabel2.setText("Ingresa tu nombre de usuario para jugar");
+
+        username.setFont(new java.awt.Font("Shree Devanagari 714", 0, 13)); // NOI18N
+
+        login.setText("Login");
+        login.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                loginActionPerformed(evt);
+            }
+        });
+
+        usrAlert.setForeground(new java.awt.Color(255, 0, 51));
+        usrAlert.setText("¡ERROR! Ingresa otro nombre");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(52, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(11, 11, 11)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(usrAlert, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(70, 70, 70)
+                        .addComponent(login)))
+                .addGap(44, 44, 44))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(usrAlert)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(login)
+                .addContainerGap(33, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
+        // TODO add your handling code here:
+        Socket s = null;  // al servidor del juego; hace el login
+        MulticastSocket mtcSocket = null; // socket multicast por el que recibe los updates del jugo 
+        DatagramSocket udpSocket = null; // 
+        String id = username.getText();
+        while(id != null){
+            usrAlert.setVisible(true);
+            id = username.getText();
+        }
+        usrAlert.setVisible(false);
+        try{
+            s = new Socket("localhost", 8888); 
+            ObjectOutputStream out = new ObjectOutputStream( s.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream( s.getInputStream()); 
+            
+            // Realizar login
+            TCPComms request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
+            out.writeObject(request); 
+            TCPComms response = (TCPComms) in.readObject();
+            while(response.getType() == TCPComms.LOGIN_FAIL){
+                username.setText(null);
+                usrAlert.setVisible(true);
+                while(id != null){
+                    usrAlert.setVisible(true);
+                    id = username.getText();
+                }
+                request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
+                out.writeObject(request); 
+                response = (TCPComms) in.readObject();
+            }
+            
+            Pantallita p = new Pantallita(response, id);
+              
+            
 
+        } catch (IOException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_loginActionPerformed
+
+    
+ 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JButton login;
+    private javax.swing.JTextField username;
+    private javax.swing.JLabel usrAlert;
     // End of variables declaration//GEN-END:variables
 }

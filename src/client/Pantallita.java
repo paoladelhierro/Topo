@@ -5,21 +5,28 @@
  */
 package client;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
+import server.TCPComms;
 
 /**
  *
  * @author hca
  */
 public class Pantallita extends javax.swing.JFrame {
+    private TCPComms response;
+    private String id;
 
     /**
      * Creates new form Pantallita
      */
-    public Pantallita() {
+    public Pantallita(TCPComms response, String id) {
         initComponents();
         groupButtons();
+        this.response = response;
+        this.id = id;
     }
     
     private Topo topoThread;
@@ -36,6 +43,7 @@ public class Pantallita extends javax.swing.JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         buttonGroup2 = new javax.swing.ButtonGroup();
         alerta = new javax.swing.JDialog();
+        jPanel1 = new javax.swing.JPanel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
         jRadioButton3 = new javax.swing.JRadioButton();
@@ -48,7 +56,7 @@ public class Pantallita extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
+        score = new javax.swing.JLabel();
 
         javax.swing.GroupLayout alertaLayout = new javax.swing.GroupLayout(alerta.getContentPane());
         alerta.getContentPane().setLayout(alertaLayout);
@@ -59,6 +67,17 @@ public class Pantallita extends javax.swing.JFrame {
         alertaLayout.setVerticalGroup(
             alertaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 300, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 100, Short.MAX_VALUE)
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -141,7 +160,7 @@ public class Pantallita extends javax.swing.JFrame {
                             .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(14, 14, 14)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(score, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(31, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -150,7 +169,7 @@ public class Pantallita extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(28, 28, 28)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(score, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(36, 36, 36)
                         .addComponent(jLabel2)
@@ -176,7 +195,7 @@ public class Pantallita extends javax.swing.JFrame {
         );
 
         jLabel1.getAccessibleContext().setAccessibleName("presionaStart");
-        jLabel3.getAccessibleContext().setAccessibleName("score");
+        score.getAccessibleContext().setAccessibleName("score");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -206,7 +225,7 @@ public class Pantallita extends javax.swing.JFrame {
         alerta.add(empiezaOtra);
         buttonGroup1.clearSelection();
         jLabel1.setText("Jugando...");
-        topoThread = new Topo(radiobuttons, buttonGroup1, alerta);
+        topoThread = new Topo(this);
         topoThread.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -238,13 +257,7 @@ public class Pantallita extends javax.swing.JFrame {
         //</editor-fold>
         
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Pantallita().setVisible(true);
-            }
-        });
- 
+
     }
     
   
@@ -259,7 +272,7 @@ public class Pantallita extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
@@ -269,8 +282,60 @@ public class Pantallita extends javax.swing.JFrame {
     private javax.swing.JRadioButton jRadioButton7;
     private javax.swing.JRadioButton jRadioButton8;
     private javax.swing.JRadioButton jRadioButton9;
+    private javax.swing.JLabel score;
     // End of variables declaration//GEN-END:variables
 
   private javax.swing.JRadioButton[] radiobuttons = new javax.swing.JRadioButton[9];
+
+    public TCPComms getResponse() {
+        return response;
+    }
+
+    public void setResponse(TCPComms response) {
+        this.response = response;
+    }
+
+    public JDialog getAlerta() {
+        return alerta;
+    }
+
+    public void setAlerta(JDialog alerta) {
+        this.alerta = alerta;
+    }
+
+    public ButtonGroup getButtonGroup1() {
+        return buttonGroup1;
+    }
+
+    public void setButtonGroup1(ButtonGroup buttonGroup1) {
+        this.buttonGroup1 = buttonGroup1;
+    }
+
+    public JLabel getScore() {
+        return score;
+    }
+
+    public void setScore(JLabel score) {
+        this.score = score;
+    }
+
+    public JRadioButton[] getRadiobuttons() {
+        return radiobuttons;
+    }
+
+    public void setRadiobuttons(JRadioButton[] radiobuttons) {
+        this.radiobuttons = radiobuttons;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+  
+    
+  
 }
 
