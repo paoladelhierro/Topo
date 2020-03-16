@@ -76,7 +76,8 @@ public class GameThread implements Runnable{
                 // Esperar una respuesta por 30 segundos
                 try {
                     UDPsocket.receive(msgIn);
-                    uid = new String(Arrays.copyOfRange(msgIn.getData(), 0, msgIn.getLength()));
+                    //uid = new String(Arrays.copyOfRange(msgIn.getData(), 0, msgIn.getLength()));
+                    uid = (new String(msgIn.getData())).trim();
                     System.out.println("Punto para: " + uid);
                     game.addPoint(uid);
                     finished = game.done();

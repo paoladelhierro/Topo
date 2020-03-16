@@ -80,7 +80,7 @@ public class StressThread implements Runnable{
             sum2 = toc*toc;
             tic = System.currentTimeMillis();
             
-            message = (new String(msgIn.getData())).split("&", 2);
+            message = (new String(msgIn.getData())).trim().split("&", 2);
             nextPos = Integer.parseInt(message[0]);
             scores = message[1];
 
@@ -94,7 +94,7 @@ public class StressThread implements Runnable{
                 sum2 = toc*toc;
                 tic = System.currentTimeMillis();
 
-                message = (new String(msgIn.getData())).split("&", 2);
+                message = (new String(msgIn.getData())).trim().split("&", 2);
                 nextPos = Integer.parseInt(message[0]);
                 scores = message[1];
             };
