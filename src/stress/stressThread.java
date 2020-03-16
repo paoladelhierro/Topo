@@ -1,7 +1,5 @@
 package stress;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,19 +10,17 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import server.GameUpdate;
 import server.TCPComms;
 
 /**
  * stressThread
  */
-public class stressThread implements Runnable{
+public class StressThread implements Runnable{
 
     private String id, serverIP;
     private int serverPort;
 
-    public stressThread(String id, String serverIP, int serverPort){
+    public StressThread(String id, String serverIP, int serverPort){
         this.id = id;
         this.serverIP = serverIP;
         this.serverPort = serverPort;
@@ -65,15 +61,17 @@ public class stressThread implements Runnable{
             //Entrar en el juego
             byte[] mtcBuffer = new byte[5000];
             DatagramPacket msgIn = new DatagramPacket(mtcBuffer, mtcBuffer.length);
-            ByteArrayInputStream byteStream = new ByteArrayInputStream(mtcBuffer);
-            ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(byteStream));
+            
 
             byte[] udpBuffer = id.getBytes();
             DatagramPacket msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP), roomPort);
 
-            GameUpdate gu;
+            int nextPos;
+            String scores;
+            String[] message;
             long tic, toc;
             double sum, sum2;
+
 
             tic = System.currentTimeMillis();
             mtcSocket.receive(msgIn);
@@ -81,10 +79,12 @@ public class stressThread implements Runnable{
             sum = toc;
             sum2 = toc*toc;
             tic = System.currentTimeMillis();
-
-            gu = (GameUpdate) is.readObject();
             
-            while(gu.getNextPos() != -1){
+            message = (new String(msgIn.getData())).split("-", 2);
+            nextPos = Integer.parseInt(message[0]);
+            scores = message[1];
+
+            while(nextPos != -1){
                 // Espera hasta un degundo antes de enviar tu respuesta
                 udpSocket.send(msgOut);
 
@@ -94,18 +94,20 @@ public class stressThread implements Runnable{
                 sum2 = toc*toc;
                 tic = System.currentTimeMillis();
 
-                gu = (GameUpdate) is.readObject();
+                message = (new String(msgIn.getData())).split("-", 2);
+                nextPos = Integer.parseInt(message[0]);
+                scores = message[1];
             };
             
             System.out.println(String.format("%g,%g", sum, sum2));
-            is.close();
 
        	} catch (UnknownHostException e) {
             System.out.println("Sock:"+e.getMessage()); 
         } catch (EOFException e) {
             System.out.println("EOF:"+e.getMessage());
         } catch (IOException e) {
-            System.out.println("IO:"+e.getMessage());
+            System.out.println("IO: "+e.getMessage());
+            e.printStackTrace();
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         } finally {

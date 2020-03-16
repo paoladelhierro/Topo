@@ -32,7 +32,10 @@ public class WAM implements WAMRoom{
     @Override
     public int addPoint(String user) throws RemoteException {
         int score = -1;
-        int i = this.scoreboard.indexOf(new Player(user));
+        Player p = new Player(user);
+        Player p2 = scoreboard.get(0);
+        boolean f = p.equals(p2);
+        int i = this.scoreboard.indexOf(p);
         if(i != -1 && !this.finished){
             score = this.scoreboard.get(i).addPoint();
         }

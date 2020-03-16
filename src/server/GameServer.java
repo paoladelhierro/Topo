@@ -91,6 +91,7 @@ class Connection implements Runnable{
                 case TCPComms.LOGIN_REQUEST:
                     uid = (String) r.getPayload();
                     if(!users.contains(uid)){
+                        users.add(uid);
                         ((WAMRoom) reg.lookup("WAM")).addUser(uid);
                         TCPComms response = new TCPComms(TCPComms.LOGIN_RESPONSE, address);
                         out.writeObject(response);
