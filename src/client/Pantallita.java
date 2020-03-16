@@ -5,6 +5,9 @@
  */
 package client;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author hca
@@ -16,7 +19,10 @@ public class Pantallita extends javax.swing.JFrame {
      */
     public Pantallita() {
         initComponents();
+        groupButtons();
     }
+    
+    private Topo topoThread;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -38,6 +44,7 @@ public class Pantallita extends javax.swing.JFrame {
         jRadioButton7 = new javax.swing.JRadioButton();
         jRadioButton8 = new javax.swing.JRadioButton();
         jRadioButton9 = new javax.swing.JRadioButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -75,6 +82,13 @@ public class Pantallita extends javax.swing.JFrame {
         buttonGroup1.add(jRadioButton9);
         jRadioButton9.setText("9.");
 
+        jButton1.setText("Start");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -100,6 +114,10 @@ public class Pantallita extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jRadioButton8)))
                 .addContainerGap(226, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addGap(94, 94, 94))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -119,15 +137,40 @@ public class Pantallita extends javax.swing.JFrame {
                     .addComponent(jRadioButton3)
                     .addComponent(jRadioButton6)
                     .addComponent(jRadioButton9))
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void groupButtons(){
+         radiobuttons[0] = jRadioButton1;
+         radiobuttons[1] = jRadioButton2;
+         radiobuttons[2] = jRadioButton3;
+         radiobuttons[3] = jRadioButton4;
+         radiobuttons[4] = jRadioButton5;
+         radiobuttons[5] = jRadioButton6;
+         radiobuttons[6] = jRadioButton7;
+         radiobuttons[7] = jRadioButton8;
+         radiobuttons[8] = jRadioButton9;
+    }
+    
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
         // TODO add your handling code here:
+        buttonGroup1.clearSelection();
+        
     }//GEN-LAST:event_jRadioButton1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        buttonGroup1.clearSelection();
+        topoThread = new Topo(radiobuttons);
+        topoThread.start();
+       
+        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -156,14 +199,12 @@ public class Pantallita extends javax.swing.JFrame {
         }
         //</editor-fold>
         
-  
-        
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Pantallita().setVisible(true);
-            
+   
                 
             }
         });
@@ -171,17 +212,13 @@ public class Pantallita extends javax.swing.JFrame {
     
   
    
-    private int changeMole(int mole){
-        int m = (int)(Math.random()*9);
-        radiobuttons[mole].setText((mole+1) + ".");
-        radiobuttons[m].setText("(u.u)");
-        return m;
-    }
+
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
+    private javax.swing.JButton jButton1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JRadioButton jRadioButton3;
@@ -193,6 +230,6 @@ public class Pantallita extends javax.swing.JFrame {
     private javax.swing.JRadioButton jRadioButton9;
     // End of variables declaration//GEN-END:variables
 
-  private javax.swing.JRadioButton[] radiobuttons = {jRadioButton1, jRadioButton2, jRadioButton3, jRadioButton4, jRadioButton5, jRadioButton6, jRadioButton7, jRadioButton8, jRadioButton9};
-  int nB = 9;
+  private javax.swing.JRadioButton[] radiobuttons = new javax.swing.JRadioButton[9];
 }
+
