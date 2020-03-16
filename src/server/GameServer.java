@@ -67,7 +67,7 @@ class Connection implements Runnable{
             if(address.equals("")){
                 // Setup en la primera connexion al servidor
                 String hostIP = Inet4Address.getLocalHost().getHostAddress();
-                String hostPort = "7777";
+                int hostPort = 7777;
                 String multiIP = "228.229.230.231";
                 
                 // Levantar instancia de WAM en RMI
@@ -81,7 +81,7 @@ class Connection implements Runnable{
                 gt.start();
 
                 // Guardar IPs
-                address =  hostIP + "," + hostPort + "," + multiIP;
+                address =  hostIP + "," + Integer.toString(hostPort) + "," + multiIP;
             }
 
             Registry reg = LocateRegistry.getRegistry("localhost");
@@ -104,6 +104,8 @@ class Connection implements Runnable{
                     users.remove(uid);
                     break;
                 case TCPComms.FINISH_GAME:
+                    address = "";
+                    users = new ArrayList<String>();
                     ((WAMRoom) reg.lookup("WAM")).reset();
                     break;
                 default:
