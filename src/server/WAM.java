@@ -22,7 +22,7 @@ public class WAM implements WAMRoom{
     }
 
     @Override
-    public synchronized void addUser(String user) throws RemoteException {
+    public void addUser(String user) throws RemoteException {
         Player p = new Player(user);
         if(!this.scoreboard.contains(p)){
             this.scoreboard.add(p);
@@ -30,7 +30,7 @@ public class WAM implements WAMRoom{
     }
 
     @Override
-    public synchronized int addPoint(String user) throws RemoteException {
+    public int addPoint(String user) throws RemoteException {
         int score = -1;
         Player p = new Player(user);
         

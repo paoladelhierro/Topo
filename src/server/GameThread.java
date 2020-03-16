@@ -10,7 +10,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Arrays;
 import java.util.Random;
 
 import interfaces.WAMRoom;
@@ -48,8 +47,8 @@ public class GameThread implements Runnable{
             WAMRoom game = (WAMRoom) r.lookup("WAM");
 
             // Esperar 30 segundos para que se unan jugadores
-            System.out.println("Durmiendo 30s");
-            Thread.sleep(1000);
+            System.out.println("GT: Durmiendo 30s para esperar a los jugadores.");
+            Thread.sleep(30000);
 
             // Whack a Mole
             byte[] mtcBuf;
@@ -59,12 +58,12 @@ public class GameThread implements Runnable{
             DatagramPacket msgIn = new DatagramPacket(UDPbuffer, UDPbuffer.length);
 
             GameUpdate gu;
-            String uid;
+            String uid = null;
             int nextPos;
             Random rng = new Random();
             boolean finished = false;
             
-            System.out.println("Iniciando el juego!");
+            System.out.println("GT: Iniciando el juego!");
             while(!finished){
                 // Calcular una nueva posicion y enviar el update a todos los jugadores
                 nextPos = rng.nextInt(9) + 1;
@@ -76,15 +75,17 @@ public class GameThread implements Runnable{
                 // Esperar una respuesta por 30 segundos
                 try {
                     UDPsocket.receive(msgIn);
-                    //uid = new String(Arrays.copyOfRange(msgIn.getData(), 0, msgIn.getLength()));
                     uid = (new String(msgIn.getData())).trim();
-                    System.out.println("Punto para: " + uid);
+                    System.out.println("GT: Punto para: " + uid);
                     game.addPoint(uid);
                     finished = game.done();
+                    // Esperar un poco entre cada ronda
+                    Thread.sleep(500);
                 } catch (SocketTimeoutException e) {
                     
                 }
             }
+            if(uid != null) System.out.println("GT: Gano: " + uid);
             
             // Al terminar, envia -1 como siguiente posicion y los puntajes finales
             nextPos = -1;

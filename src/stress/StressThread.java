@@ -10,6 +10,8 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Random;
+
 import server.TCPComms;
 
 /**
@@ -19,11 +21,13 @@ public class StressThread implements Runnable{
 
     private String id, serverIP;
     private int serverPort;
+    private int totalClients;
 
-    public StressThread(String id, String serverIP, int serverPort){
+    public StressThread(String id, String serverIP, int serverPort, int totalClients){
         this.id = id;
         this.serverIP = serverIP;
         this.serverPort = serverPort;
+        this.totalClients = totalClients;
     }
 
     @Override
@@ -72,34 +76,38 @@ public class StressThread implements Runnable{
             long tic, toc;
             double sum, sum2;
 
-
-            tic = System.currentTimeMillis();
             mtcSocket.receive(msgIn);
-            toc = System.currentTimeMillis() - tic;
-            sum = toc;
-            sum2 = toc*toc;
             tic = System.currentTimeMillis();
+            sum = 0;
+            sum2 = 0;
             
             message = (new String(msgIn.getData())).trim().split("&", 2);
             nextPos = Integer.parseInt(message[0]);
             scores = message[1];
 
+            // n = cuantos mensajes recibe
+            int n = 0;
+            Random rng = new Random();
+
             while(nextPos != -1){
-                // Espera hasta un degundo antes de enviar tu respuesta
+                // Espera hasta un segundo antes de enviar tu respuesta
+                // Thread.sleep(rng.nextInt(1000));
                 udpSocket.send(msgOut);
+                
 
                 mtcSocket.receive(msgIn);
                 toc = System.currentTimeMillis() - tic;
-                sum = toc;
-                sum2 = toc*toc;
                 tic = System.currentTimeMillis();
+                sum += toc;
+                sum2 += toc*toc;
+                n++;
 
                 message = (new String(msgIn.getData())).trim().split("&", 2);
                 nextPos = Integer.parseInt(message[0]);
                 scores = message[1];
             };
             
-            System.out.println(String.format("%g,%g", sum, sum2));
+            System.out.println(String.format("%d,%d,%g,%g", totalClients, n, sum, sum2));
 
        	} catch (UnknownHostException e) {
             System.out.println("Sock:"+e.getMessage()); 
