@@ -15,13 +15,17 @@ import java.util.logging.Logger;
  */
 public class Topo extends Thread{
     private javax.swing.JRadioButton[] radiobuttons = new javax.swing.JRadioButton[9];
+    private javax.swing.JDialog alerta;
+    private javax.swing.ButtonGroup buttons;
     private boolean keepGoing = true;
     int mole;
     
-    public Topo(javax.swing.JRadioButton[] radiobuttons){
+    public Topo(javax.swing.JRadioButton[] radiobuttons, javax.swing.ButtonGroup buttons, javax.swing.JDialog alerta){
         this.radiobuttons = radiobuttons;
-        
+        this.buttons = buttons;
+        this.alerta = alerta;
     }
+    
     private int changeMole(int mole){
         int m = (int)(Math.random()*9);
         radiobuttons[mole].setText((mole+1) + ".");
@@ -35,19 +39,24 @@ public class Topo extends Thread{
         while(keepGoing){
             mole = changeMole(mole);
             try {
-                this.sleep(500);
-                if(radiobuttons[mole].isSelected()){
-                    System.out.println("Gano");
-                    radiobuttons[mole].setSelected(false);
-                    radiobuttons[mole].setText((mole+1)+".");
-                    keepGoing=  false;   
-                    break;
+                if(mole>-1){
+                    this.sleep(500);
+                    if(radiobuttons[mole].isSelected()){
+                        alerta.setTitle("¡Felicidades! Ganaste");
+                        radiobuttons[mole].setSelected(false);
+                        radiobuttons[mole].setText((mole+1)+".");
+                        keepGoing=  false;   
+                    }
+                    buttons.clearSelection();
+                }else{
+                    keepGoing = false;
+                    alerta.setTitle("Lo siento, perdiste");
                 }
-                
             } catch (InterruptedException ex) {
             Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
             }   
-        } 
+        }
+        alerta.setVisible(true);
     }
  
     
