@@ -1,2 +1,0 @@
-server.GameServer
-server.Connection

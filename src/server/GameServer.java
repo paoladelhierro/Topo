@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -20,21 +22,22 @@ public class GameServer {
 
     public static void main(String[] args) {
         ServerSocket listenSocket = null;
-        try{
+        try {
             int serverPort = 8888;
             LocateRegistry.createRegistry(1099);
             listenSocket = new ServerSocket(serverPort);
-            while(true) {
-                System.out.println("Waiting for messages..."); 
+            while (true) {
+                System.out.println("Waiting for messages...");
                 Socket clientSocket = listenSocket.accept();
                 Thread c = new Thread(new Connection(clientSocket));
                 c.start();
             }
-        } catch(IOException e) {
-            System.out.println("Listen :"+ e.getMessage());
-        }finally{
+        } catch (IOException e) {
+            System.out.println("Listen :" + e.getMessage());
+        } finally {
             try {
-                if(listenSocket != null) listenSocket.close();
+                if (listenSocket != null)
+                    listenSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -45,31 +48,32 @@ public class GameServer {
 /**
  * Connection
  */
-class Connection implements Runnable{
-    
+class Connection implements Runnable {
+
     private static ArrayList<String> users = new ArrayList<String>();
     private static String address = "";
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private Socket clientSocket;
 
-    public Connection (Socket aClientSocket) {
+    public Connection(Socket aClientSocket) {
         try {
             clientSocket = aClientSocket;
             in = new ObjectInputStream(clientSocket.getInputStream());
             out = new ObjectOutputStream(clientSocket.getOutputStream());
-        } catch(IOException e)  {System.out.println("Connection:" + e.getMessage());}
+        } catch (IOException e) {
+            System.out.println("Connection:" + e.getMessage());
+        }
     }
 
-    @Override
-    public void run() {
-        try {
-            if(address.equals("")){
+    private static synchronized void init() {
+        if (address.equals("")) {
+            try {
                 // Setup en la primera connexion al servidor
                 String hostIP = Inet4Address.getLocalHost().getHostAddress();
                 int hostPort = 7777;
                 String multiIP = "228.229.230.231";
-                
+
                 // Levantar instancia de WAM en RMI
                 WAM wam = new WAM(5);
                 Registry reg = LocateRegistry.getRegistry("localhost");
@@ -81,8 +85,36 @@ class Connection implements Runnable{
                 gt.start();
 
                 // Guardar IPs
-                address =  hostIP + "," + Integer.toString(hostPort) + "," + multiIP;
+                address = hostIP + "," + Integer.toString(hostPort) + "," + multiIP;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+        }
+    }
+
+    private static synchronized void reset() {
+        if (!address.equals("")) {
+            Registry reg;
+            try {
+                reg = LocateRegistry.getRegistry("localhost");
+                address = "";
+                users = new ArrayList<String>();
+                ((WAMRoom) reg.lookup("WAM")).reset();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            }
+            
+
+        }
+
+    }
+
+    @Override
+    public void run() {
+        try {
+            init();
 
             Registry reg = LocateRegistry.getRegistry("localhost");
             TCPComms r = (TCPComms) in.readObject();
@@ -105,9 +137,7 @@ class Connection implements Runnable{
                     users.remove(uid);
                     break;
                 case TCPComms.FINISH_GAME:
-                    address = "";
-                    users = new ArrayList<String>();
-                    ((WAMRoom) reg.lookup("WAM")).reset();
+                    reset();
                     break;
                 default:
                     break;
