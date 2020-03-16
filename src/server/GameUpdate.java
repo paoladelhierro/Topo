@@ -33,6 +33,6 @@ public class GameUpdate implements Serializable{
 
     @Override
     public String toString() {
-        return Integer.toString(nextPos) + "-" + scoreboard.toString();
+        return Integer.toString(nextPos) + "&" + scoreboard.toString();
     }
 }

@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Arrays;
 import java.util.Random;
 
 import interfaces.WAMRoom;
@@ -75,7 +76,7 @@ public class GameThread implements Runnable{
                 // Esperar una respuesta por 30 segundos
                 try {
                     UDPsocket.receive(msgIn);
-                    uid = new String(msgIn.getData());
+                    uid = new String(Arrays.copyOfRange(msgIn.getData(), 0, msgIn.getLength()));
                     System.out.println("Punto para: " + uid);
                     game.addPoint(uid);
                     finished = game.done();
