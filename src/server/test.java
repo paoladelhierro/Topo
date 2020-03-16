@@ -5,6 +5,8 @@
  */
 package server;
 
+import interfaces.WAMRoom;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -12,10 +14,9 @@ import java.util.ArrayList;
  * @author Mike
  */
 public class test {
-    public static void main(String[] args) {
-        ArrayList<Player> l = new ArrayList<>();
-        l.add(new Player("p1"));
-        l.get(0).addPoint();
-        System.out.println(l.indexOf(new Player("p1")));
+    public static void main(String[] args) throws RemoteException{
+        WAMRoom w = new WAM(5);
+        w.addUser("p1");
+        w.addPoint("p1");
     }
 }
