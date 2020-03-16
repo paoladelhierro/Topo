@@ -6,7 +6,7 @@ import java.util.Comparator;
 /**
  * Player
  */
-public class Player implements Serializable{
+public class Player implements Serializable, Comparable<Player>{
 
     private static final long serialVersionUID = 1L;
     private String uid;
@@ -46,7 +46,12 @@ public class Player implements Serializable{
     }
 
     public int addPoint(){
-        return ++score;
+        return ++this.score;
+    }
+
+    @Override
+    public int compareTo(Player o) {
+        return this.uid.compareTo(o.uid);
     }
 
     @Override

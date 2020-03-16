@@ -31,5 +31,8 @@ public class GameUpdate implements Serializable{
         return scoreboard;
     }
 
-    
+    @Override
+    public String toString() {
+        return Integer.toString(nextPos) + "-" + scoreboard.toString();
+    }
 }
