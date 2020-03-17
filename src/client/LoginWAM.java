@@ -121,7 +121,7 @@ public class LoginWAM extends javax.swing.JFrame {
         Socket s = null;  // al servidor del juego; hace el login
         MulticastSocket mtcSocket = null; // socket multicast por el que recibe los updates del jugo
         DatagramSocket udpSocket = null; //
-        id = username.getText();
+        id = username1.getText();
         System.out.println(id);
         if(id !=  null){
             usrAlert.setVisible(false);

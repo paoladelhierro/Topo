@@ -78,7 +78,7 @@ public class GameThread implements Runnable {
             System.out.println("GT: Iniciando el juego!");
             while (!finished) {
                 // Calcular una nueva posicion (1-9) y crear un GameUpdate
-                nextPos = rng.nextInt(9) + 1;
+                nextPos = rng.nextInt(9);
                 gu = new GameUpdate(game.getScore(), nextPos);
 
                 // Enviar un mensaje multicast con la actualizacion del juego
