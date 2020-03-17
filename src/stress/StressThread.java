@@ -104,8 +104,8 @@ public class StressThread implements Runnable {
                 nextPos = Integer.parseInt(message[0]);
                 scores = message[1];
 
-                // 5% de probabilidad de salirse del juego y volver a entrar
-                if (rng.nextDouble() >= 0.6) {
+                // 10% de probabilidad de salirse del juego y volver a entrar
+                if (rng.nextDouble() >= 0.7) {
                     request = new TCPComms(TCPComms.LOGOFF_REQUEST, id);
                     out.writeObject(request);
                     try {
@@ -114,9 +114,12 @@ public class StressThread implements Runnable {
                         e.printStackTrace();
                     }
                     request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
+                    out.writeObject(request);
+                    in.readObject();
                 }
             };
-            
+
+            request = new TCPComms(TCPComms.CLOSE_CONNECTION, null);
             System.out.println(String.format("%d,%d,%g,%g", totalClients, n, sum, sum2));
 
        	} catch (UnknownHostException e) {

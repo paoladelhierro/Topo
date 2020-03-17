@@ -132,37 +132,44 @@ class Connection implements Runnable {
             String uid;
 
             // Decidir accion dependiendo del tipo de request que se recibio
-            
-            switch (r.getType()) {
-                case TCPComms.LOGIN_REQUEST:
-                    // Request para agregar un jugador al juego.
-                    uid = (String) r.getPayload();
-
-                    if(!users.contains(uid) && !uid.equals("")){
-                        // Si el username esta disponible, agregarlo al arreglo de usernames y al juego
-                        users.add(uid);
-                        ((WAMRoom) reg.lookup("WAM")).addUser(uid);
-                        // Contestar a la solicitud de login con las direcciones IP del juego
-                        TCPComms response = new TCPComms(TCPComms.LOGIN_RESPONSE, address);
-                        out.writeObject(response);
-                    }else{
-                        // Si el username esta tomado, contestar a la solicitud inicial con un fracaso
-                        TCPComms response = new TCPComms(TCPComms.LOGIN_FAIL, null);
-                        out.writeObject(response);
-                    }
-                    break;
-                case TCPComms.LOGOFF_REQUEST:
-                    // Solicitud para liberar un username. Esto no borra al usuario del juego, solo libera el username.
-                    uid = (String) r.getPayload();
-                    users.remove(uid);
-                    break;
-                case TCPComms.FINISH_GAME:
-                    // Reiniciar el servidor para empezar otro juego
-                    reset();
-                    break;
-                default:
-                    break;
+            int request_type = r.getType();
+            while(request_type != TCPComms.CLOSE_CONNECTION && request_type != TCPComms.FINISH_GAME){
+                switch (request_type) {
+                    case TCPComms.LOGIN_REQUEST:
+                        // Request para agregar un jugador al juego.
+                        uid = (String) r.getPayload();
+                        if(!users.contains(uid) && !uid.equals("")){
+                            // Si el username esta disponible, agregarlo al arreglo de usernames y al juego
+                            System.out.println("GS: " + uid + " login");
+                            users.add(uid);
+                            ((WAMRoom) reg.lookup("WAM")).addUser(uid);
+                            // Contestar a la solicitud de login con las direcciones IP del juego
+                            TCPComms response = new TCPComms(TCPComms.LOGIN_RESPONSE, address);
+                            out.writeObject(response);
+                        }else{
+                            // Si el username esta tomado, contestar a la solicitud inicial con un fracaso
+                            System.out.println("GS: " + uid + " login failed");
+                            TCPComms response = new TCPComms(TCPComms.LOGIN_FAIL, null);
+                            out.writeObject(response);
+                        }
+                        break;
+                    case TCPComms.LOGOFF_REQUEST:
+                        // Solicitud para liberar un username. Esto no borra al usuario del juego, solo libera el username.
+                        uid = (String) r.getPayload();
+                        
+                        if(users.remove(uid)) System.out.println("GS: " + uid + " logoff");
+                        break;
+                    case TCPComms.FINISH_GAME:
+                        // Reiniciar el servidor para empezar otro juego
+                        reset();
+                        break;
+                    default:
+                        break;
+                }
+                r = (TCPComms) in.readObject();
+                request_type = r.getType();
             }
+            
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
