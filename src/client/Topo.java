@@ -50,11 +50,13 @@ public class Topo extends Thread{
 
     @Override
     public void run(){
+   
         String[] address = ((String) response.getPayload()).split(",");
         String roomIP = address[0];
         int roomPort = Integer.parseInt(address[1]);
         String mtcIP = address[2];
-
+        System.out.println("ya estoy en topo");
+        System.out.println(mtcIP);
         try {
             // Sockets para comms con el juego
             DatagramSocket udpSocket = new DatagramSocket();
