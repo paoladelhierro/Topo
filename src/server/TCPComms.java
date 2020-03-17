@@ -13,6 +13,7 @@ public class TCPComms implements Serializable{
     public static final int LOGIN_RESPONSE = 1001;
     public static final int LOGOFF_REQUEST = 2;
     public static final int FINISH_GAME = 3;
+    public static final int CLOSE_CONNECTION = 4;
     
     // Entero para identificar el tipo de solicitud
     private int type;

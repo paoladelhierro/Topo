@@ -101,8 +101,8 @@ public class GameThread implements Runnable {
                     // Revisar si ha terminado el juego
                     finished = game.done();
 
-                    // Esperar 500ms para empezar la siguiente ronda
-                    Thread.sleep(500);
+                    // Esperar 1s para empezar la siguiente ronda
+                    Thread.sleep(1000);
                 } catch (SocketTimeoutException e) {
                     // Si se llega a un timeout sin conseguir respuesta, nadie consigue el punto y
                     // se va a la siguiente ronda
