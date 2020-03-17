@@ -27,6 +27,16 @@ public class Pantallita extends javax.swing.JFrame {
         groupButtons();
         this.response = response;
         this.id = id;
+        
+        alerta.setSize(300, 100);
+        javax.swing.JLabel empiezaOtra = new javax.swing.JLabel();
+        empiezaOtra.setText("Registrate para jugar de nuevo");
+        empiezaOtra.setSize(300, 100);
+        alerta.add(empiezaOtra);
+        buttonGroup1.clearSelection();
+        jLabel1.setText("Jugando...");
+        topoThread = new Topo(this);
+        topoThread.start();
     }
     
     private Topo topoThread;
@@ -53,7 +63,6 @@ public class Pantallita extends javax.swing.JFrame {
         jRadioButton7 = new javax.swing.JRadioButton();
         jRadioButton8 = new javax.swing.JRadioButton();
         jRadioButton9 = new javax.swing.JRadioButton();
-        jButton1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         score = new javax.swing.JLabel();
@@ -116,15 +125,6 @@ public class Pantallita extends javax.swing.JFrame {
         buttonGroup1.add(jRadioButton9);
         jRadioButton9.setText("9.");
 
-        jButton1.setText("Start");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("Presiona start para comenzar el juego");
-
         jLabel2.setText("¡PEGALE AL MONSTRUO!");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -156,12 +156,11 @@ public class Pantallita extends javax.swing.JFrame {
                                 .addComponent(jRadioButton8)))
                         .addGap(67, 67, 67)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1)
                             .addComponent(jLabel1)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(14, 14, 14)
                                 .addComponent(score, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(31, Short.MAX_VALUE))
+                .addContainerGap(116, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -189,9 +188,7 @@ public class Pantallita extends javax.swing.JFrame {
                     .addComponent(jRadioButton6)
                     .addComponent(jRadioButton9)
                     .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addContainerGap(11, Short.MAX_VALUE))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         jLabel1.getAccessibleContext().setAccessibleName("presionaStart");
@@ -215,19 +212,6 @@ public class Pantallita extends javax.swing.JFrame {
     private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jRadioButton1ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        alerta.setSize(300, 100);
-        javax.swing.JLabel empiezaOtra = new javax.swing.JLabel();
-        empiezaOtra.setText("Presiona 'Start' para jugar de nuevo");
-        empiezaOtra.setSize(300, 100);
-        alerta.add(empiezaOtra);
-        buttonGroup1.clearSelection();
-        jLabel1.setText("Jugando...");
-        topoThread = new Topo(this);
-        topoThread.start();
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -269,7 +253,6 @@ public class Pantallita extends javax.swing.JFrame {
     private javax.swing.JDialog alerta;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.ButtonGroup buttonGroup2;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

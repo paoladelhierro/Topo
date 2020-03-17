@@ -55,9 +55,7 @@ public class Topo extends Thread{
         String roomIP = address[0];
         int roomPort = Integer.parseInt(address[1]);
         String mtcIP = address[2];
-        System.out.println("ya estoy en topo");
-        System.out.println(mtcIP);
-        
+
         try {
             // Sockets para comms con el juego
             udpSocket = new DatagramSocket();
@@ -90,9 +88,10 @@ public class Topo extends Thread{
             radiobuttons[i].putClientProperty("index", i);
             radiobuttons[i].addActionListener((java.awt.event.ActionEvent evt) -> {
                int j = (Integer)((javax.swing.JRadioButton)evt.getSource()).getClientProperty( "index" );
-               if(j == mole){
+               if(j == mole && !played){
                     try {
                         udpSocket.send(msgOut);
+                        played = true;
                    } catch (IOException ex) {
                        Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
                    }
@@ -109,7 +108,7 @@ public class Topo extends Thread{
         actionListeners();
         try {
             //Entrar en el juego
-
+            System.out.println("estoy en el try catch");
             String scores;
             String[] message;
             
@@ -122,6 +121,7 @@ public class Topo extends Thread{
             scoreboard.setText(scores);
             
             while(mole != -1){
+                System.out.println(mole);
                 radiobuttons[mole].setText("(u.u)");
                 Thread.sleep(2000);
                 mtcSocket.receive(msgIn);
@@ -131,6 +131,7 @@ public class Topo extends Thread{
                 mole = Integer.parseInt(message[0]);
                 scores = message[1];
                 scoreboard.setText(scores);
+                played =false;
             }
             alerta.setTitle("Acabo el juego");
             alerta.add(scoreboard);
