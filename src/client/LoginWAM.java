@@ -178,7 +178,6 @@ public class LoginWAM extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        System.setProperty("java.net.preferIPv4Stack", "true");
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
