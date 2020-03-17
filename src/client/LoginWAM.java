@@ -117,6 +117,7 @@ public class LoginWAM extends javax.swing.JFrame {
 
     private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
         // TODO add your handling code here:
+        usrAlert.setVisible(false);
         System.out.println("si entre");
         Socket s = null;  // al servidor del juego; hace el login
         MulticastSocket mtcSocket = null; // socket multicast por el que recibe los updates del jugo
@@ -124,7 +125,6 @@ public class LoginWAM extends javax.swing.JFrame {
         id = username1.getText();
         System.out.println(id);
         if(id !=  null){
-            usrAlert.setVisible(false);
             System.out.println("ya tengo al usuario: " +  id);
             try{
                 s = new Socket("localhost", 8888);
@@ -144,9 +144,9 @@ public class LoginWAM extends javax.swing.JFrame {
                 }
 
         } catch (IOException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginWAM.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LoginWAM.class.getName()).log(Level.SEVERE, null, ex);
         }
        }
        usrAlert.setVisible(true);
