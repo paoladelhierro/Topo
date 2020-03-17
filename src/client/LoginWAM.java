@@ -118,14 +118,12 @@ public class LoginWAM extends javax.swing.JFrame {
     private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
         // TODO add your handling code here:
         usrAlert.setVisible(false);
-        System.out.println("si entre");
         Socket s = null;  // al servidor del juego; hace el login
         MulticastSocket mtcSocket = null; // socket multicast por el que recibe los updates del jugo
         DatagramSocket udpSocket = null; //
         id = username1.getText();
         System.out.println(id);
         if(id !=  null){
-            System.out.println("ya tengo al usuario: " +  id);
             try{
                 s = new Socket("localhost", 8888);
                 ObjectOutputStream out = new ObjectOutputStream( s.getOutputStream());
@@ -134,13 +132,12 @@ public class LoginWAM extends javax.swing.JFrame {
                 // Realizar login
                 TCPComms request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
                 out.writeObject(request);
-                System.out.println("ya hice el request");
                 response = (TCPComms) in.readObject();
                 if(response.getType() != TCPComms.LOGIN_FAIL){
-                    System.out.println("ya jalo");
                     java.awt.EventQueue.invokeLater(() -> {
                         new Pantallita(response, id).setVisible(true);
                     });
+            
                 }
 
         } catch (IOException ex) {
@@ -148,8 +145,10 @@ public class LoginWAM extends javax.swing.JFrame {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginWAM.class.getName()).log(Level.SEVERE, null, ex);
         }
-       }
-       usrAlert.setVisible(true);
+       }else{
+            usrAlert.setVisible(true);
+        }
+       
     }//GEN-LAST:event_loginActionPerformed
 
     /**
@@ -179,6 +178,8 @@ public class LoginWAM extends javax.swing.JFrame {
         }
         //</editor-fold>
 
+        System.setProperty("java.net.preferIPv4Stack", "true");
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
