@@ -109,7 +109,7 @@ public class StressThread implements Runnable {
                     request = new TCPComms(TCPComms.LOGOFF_REQUEST, id);
                     out.writeObject(request);
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
