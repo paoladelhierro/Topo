@@ -133,7 +133,7 @@ class Connection implements Runnable {
 
             // Decidir accion dependiendo del tipo de request que se recibio
             int request_type = r.getType();
-            while(request_type != TCPComms.CLOSE_CONNECTION && request_type != TCPComms.FINISH_GAME){
+            while(request_type != TCPComms.CLOSE_CONNECTION){
                 switch (request_type) {
                     case TCPComms.LOGIN_REQUEST:
                         // Request para agregar un jugador al juego.
@@ -172,7 +172,7 @@ class Connection implements Runnable {
             
 
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         } finally {
             try {
                 clientSocket.close();

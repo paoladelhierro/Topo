@@ -126,6 +126,9 @@ public class GameThread implements Runnable {
             TCPComms request = new TCPComms(TCPComms.FINISH_GAME, null);
             out.writeObject(request);
 
+            request = new TCPComms(TCPComms.CLOSE_CONNECTION, null);
+            out.writeObject(request);
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
