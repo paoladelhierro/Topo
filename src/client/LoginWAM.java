@@ -129,7 +129,7 @@ public class LoginWAM extends javax.swing.JFrame {
         System.out.println(id);
         if(id !=  null){
             try{
-                s = new Socket("localhost", 8888);
+                s = new Socket("localhost", 9999);
                 out = new ObjectOutputStream( s.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream( s.getInputStream());
 

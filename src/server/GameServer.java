@@ -23,7 +23,7 @@ public class GameServer {
             
 
             // Levantar un socket TCP en el puerto 8888, y levantar el registro RMI en el servidor.
-            int serverPort = 8888;
+            int serverPort = 9999;
             LocateRegistry.createRegistry(1099);
             listenSocket = new ServerSocket(serverPort);
 

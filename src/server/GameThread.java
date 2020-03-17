@@ -52,9 +52,9 @@ public class GameThread implements Runnable {
             Registry r = LocateRegistry.getRegistry("localhost");
             WAMRoom game = (WAMRoom) r.lookup("WAM");
 
-            // Esperar 15 segundos para que se unan jugadores
+            // Esperar 10 segundos para que se unan jugadores
             // System.out.println("GT: Durmiendo 30s para esperar a los jugadores.");
-            Thread.sleep(15000);
+            Thread.sleep(10000);
             // Esperar a que haya al menos 1 jugador
             int playerCount = game.playerCount();
             while(playerCount == 0){
@@ -122,7 +122,7 @@ public class GameThread implements Runnable {
                     finished = game.done();
 
                     // Esperar 500ms para empezar la siguiente ronda
-                    Thread.sleep(500);
+                    // Thread.sleep(500);
                 } catch (SocketTimeoutException e) {
                     // Si se llega a un timeout sin conseguir respuesta, nadie consigue el punto y
                     // se va a la siguiente ronda
@@ -141,7 +141,7 @@ public class GameThread implements Runnable {
             game.reset();
 
             // Aviza al servidor TCP que el juego termino para poder empezar uno nuevo
-            s = new Socket("localhost", 8888);
+            s = new Socket("localhost", 9999);
             ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(s.getInputStream());
             

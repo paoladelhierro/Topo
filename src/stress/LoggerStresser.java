@@ -13,7 +13,7 @@ public class LoggerStresser {
             n = 5;
         }
         String TCPHost = "localhost";
-        int TCPPort = 8888;
+        int TCPPort = 9999;
         
         Thread t;
         String id;
