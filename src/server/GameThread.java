@@ -45,7 +45,7 @@ public class GameThread implements Runnable {
             // Crear socket udp
             UDPsocket = new DatagramSocket(hostPort);
             // Timeout de 30s para cada ronda
-            UDPsocket.setSoTimeout(30000);
+            UDPsocket.setSoTimeout(10000);
 
             // Conectarse a RMI y conseguir la instancia del juego
             Registry r = LocateRegistry.getRegistry("localhost");

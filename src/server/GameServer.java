@@ -121,15 +121,15 @@ class Connection implements Runnable {
     @Override
     public void run() {
         // Hilo de ejecucion para atender conexiones
+        String uid = null;
         try {
             
-
             // Obtener el registro RMI
             Registry reg = LocateRegistry.getRegistry("localhost");
             
             // Leer un objeto de la conexion TCP
             TCPComms r = (TCPComms) in.readObject();
-            String uid;
+            
 
             // Decidir accion dependiendo del tipo de request que se recibio
             int request_type = r.getType();
@@ -174,7 +174,12 @@ class Connection implements Runnable {
             
 
         } catch (Exception e) {
-            e.printStackTrace();
+            if(uid != null){
+                System.out.println("User " + uid + " connection error: " + e.getMessage());
+                users.remove(uid);
+            }else{
+                e.printStackTrace();
+            }
         } finally {
             try {
                 clientSocket.close();
