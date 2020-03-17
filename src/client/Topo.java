@@ -132,10 +132,11 @@ public class Topo extends Thread{
                 scores = message[1];
                 scoreboard.setText(scores);
                 played =false;
-            }
+            }  
             alerta.setTitle("Acabo el juego");
             alerta.add(scoreboard);
             alerta.setVisible(true);
+            pantallita.dispose();
         } catch (SocketException ex) {
             Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnknownHostException ex) {

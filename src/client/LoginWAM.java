@@ -137,7 +137,7 @@ public class LoginWAM extends javax.swing.JFrame {
                     java.awt.EventQueue.invokeLater(() -> {
                         new Pantallita(response, id).setVisible(true);
                     });
-            
+   
                 }
 
         } catch (IOException ex) {
