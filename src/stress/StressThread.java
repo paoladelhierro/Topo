@@ -46,7 +46,11 @@ public class StressThread implements Runnable {
             TCPComms response = (TCPComms) in.readObject();
             while (response.getType() == TCPComms.LOGIN_FAIL) {
                 // Cambiar username y volver a intentar
-
+                request = new TCPComms(TCPComms.LOGOFF_REQUEST, id);
+                out.writeObject(request);
+                request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
+                out.writeObject(request);
+                response = (TCPComms) in.readObject();
             }
 
             String[] address = ((String) response.getPayload()).split(",");
@@ -65,9 +69,8 @@ public class StressThread implements Runnable {
             byte[] mtcBuffer = new byte[5000];
             DatagramPacket msgIn = new DatagramPacket(mtcBuffer, mtcBuffer.length);
 
-            byte[] udpBuffer = id.getBytes();
-            DatagramPacket msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP),
-                    roomPort);
+            byte[] udpBuffer;
+            DatagramPacket msgOut;
 
             int nextPos;
             String scores;
@@ -87,40 +90,40 @@ public class StressThread implements Runnable {
             // n = cuantos mensajes recibe
             int n = 0;
             Random rng = new Random();
+            boolean skip = false;
+            int disconnects = 0;
 
             while (nextPos != -1) {
                 // Espera hasta un segundo antes de enviar tu respuesta
                 // Thread.sleep(rng.nextInt(1000));
+                udpBuffer = (Integer.toString(nextPos) + "," + id).getBytes();
+                msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP), roomPort);
                 udpSocket.send(msgOut);
 
                 mtcSocket.receive(msgIn);
-                toc = System.currentTimeMillis() - tic;
-                tic = System.currentTimeMillis();
-                sum += toc;
-                sum2 += toc * toc;
-                n++;
+                if(!skip){
+                    toc = System.currentTimeMillis() - tic;
+                    tic = System.currentTimeMillis();
+                    sum += toc;
+                    sum2 += toc * toc;
+                    n++;
+                }else{
+                    skip = false;
+                    tic = System.currentTimeMillis();
+                }
+                
 
                 message = (new String(msgIn.getData())).trim().split("&", 2);
                 nextPos = Integer.parseInt(message[0]);
                 scores = message[1];
 
-                // 10% de probabilidad de salirse del juego y volver a entrar
-                if (rng.nextDouble() >= 0.7) {
-                    request = new TCPComms(TCPComms.LOGOFF_REQUEST, id);
-                    out.writeObject(request);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
-                    out.writeObject(request);
-                    in.readObject();
-                }
             };
 
             request = new TCPComms(TCPComms.CLOSE_CONNECTION, null);
-            System.out.println(String.format("%d,%d,%g,%g", totalClients, n, sum, sum2));
+            out.writeObject(request);
+            double avg = ((double) sum)/n;
+            double std = Math.sqrt(((double) sum2)/n - avg*avg);
+            System.out.println(String.format("%d,%g,%g", totalClients, avg, std));
 
        	} catch (UnknownHostException e) {
             System.out.println("Sock:"+e.getMessage()); 

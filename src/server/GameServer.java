@@ -29,7 +29,7 @@ public class GameServer {
 
             // Eschuchar para nuevas conexiones
             while (true) {
-                System.out.println("Waiting for connection...");
+                //System.out.println("Waiting for connection...");
                 Socket clientSocket = listenSocket.accept();
                 Thread c = new Thread(new Connection(clientSocket));
                 c.start();
@@ -73,14 +73,14 @@ class Connection implements Runnable {
         // Setup para inicializar el hilo de ejecucion del juego
         if (address.equals("")) {
             try {
-                System.out.println("GS: Empezando un juego nuevo.");
+                // System.out.println("GS: Empezando un juego nuevo.");
                 // Se definen la direccion IP, puerto y direccion multicast para el juego.
                 String hostIP = Inet4Address.getLocalHost().getHostAddress();
                 int hostPort = 7777;
                 String multiIP = "228.229.230.231";
 
                 // Levantar instancia de Whack A Mole en RMI
-                WAM wam = new WAM(5);
+                WAM wam = new WAM(3);
                 Registry reg = LocateRegistry.getRegistry("localhost");
                 WAMRoom stub = (WAMRoom) UnicastRemoteObject.exportObject(wam, 0);
                 reg.rebind("WAM", stub);
@@ -115,7 +115,14 @@ class Connection implements Runnable {
             
 
         }
+    }
 
+    private static synchronized boolean drop(String uid){
+        return users.remove(uid);
+    }
+
+    private static synchronized boolean add(String uid){
+        return users.add(uid);
     }
 
     @Override
@@ -142,15 +149,15 @@ class Connection implements Runnable {
                             // Si el username esta disponible, agregarlo al arreglo de usernames y al juego
                             // Inicializar el juego.
                             init();
-                            System.out.println("GS: " + uid + " login");
-                            users.add(uid);
+                            // System.out.println("GS: " + uid + " login");
+                            add(uid);
                             ((WAMRoom) reg.lookup("WAM")).addUser(uid);
                             // Contestar a la solicitud de login con las direcciones IP del juego
                             TCPComms response = new TCPComms(TCPComms.LOGIN_RESPONSE, address);
                             out.writeObject(response);
                         }else{
                             // Si el username esta tomado, contestar a la solicitud inicial con un fracaso
-                            System.out.println("GS: " + uid + " login failed");
+                            // System.out.println("GS: " + uid + " login failed");
                             TCPComms response = new TCPComms(TCPComms.LOGIN_FAIL, null);
                             out.writeObject(response);
                         }
@@ -159,7 +166,8 @@ class Connection implements Runnable {
                         // Solicitud para liberar un username. Esto no borra al usuario del juego, solo libera el username.
                         uid = (String) r.getPayload();
                         
-                        if(users.remove(uid)) System.out.println("GS: " + uid + " logoff");
+                        // if(users.remove(uid)) System.out.println("GS: " + uid + " logoff");
+                        drop(uid);
                         break;
                     case TCPComms.FINISH_GAME:
                         // Reiniciar el servidor para empezar otro juego
@@ -175,8 +183,8 @@ class Connection implements Runnable {
 
         } catch (Exception e) {
             if(uid != null){
-                System.out.println("User " + uid + " connection error: " + e.getMessage());
-                users.remove(uid);
+                // System.out.println("User " + uid + " connection error: " + e.getMessage());
+                drop(uid);
             }else{
                 e.printStackTrace();
             }

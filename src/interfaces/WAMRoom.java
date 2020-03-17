@@ -15,5 +15,6 @@ public interface WAMRoom extends Remote{
     public ArrayList<Player> getScore() throws RemoteException;
     public boolean done() throws RemoteException;
     public void reset() throws RemoteException;
+    public int playerCount() throws RemoteException;
 
 }

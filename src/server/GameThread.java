@@ -52,8 +52,12 @@ public class GameThread implements Runnable {
             WAMRoom game = (WAMRoom) r.lookup("WAM");
 
             // Esperar 30 segundos para que se unan jugadores
-            System.out.println("GT: Durmiendo 30s para esperar a los jugadores.");
-            Thread.sleep(30000);
+            // System.out.println("GT: Durmiendo 30s para esperar a los jugadores.");
+            Thread.sleep(10000);
+            int playerCount = game.playerCount();
+            while(playerCount == 0){
+                playerCount = game.playerCount();
+            }
 
             // Inicializar buffer para los mensajes multicast de salida
             byte[] mtcBuf;
@@ -66,19 +70,26 @@ public class GameThread implements Runnable {
             // gu contiene las actualizaciones del juego: la siguiente posicion para el topo
             // y el puntaje de cada jugador
             GameUpdate gu;
-            int nextPos;
+            int nextPos, rand;
+            nextPos = -1;
+            rand = -1;
 
             // uid guarda el primer usuario en pegarle al topo
+            String[] message;
+            int hitPos;
             String uid = null;
             // Generador de numeros aleatorios para determinar la siguiente posicion
             Random rng = new Random();
             // Bandera de fin de juego
             boolean finished = false;
 
-            System.out.println("GT: Iniciando el juego!");
+            // System.out.println("GT: Iniciando el juego!");
             while (!finished) {
-                // Calcular una nueva posicion (1-9) y crear un GameUpdate
-                nextPos = rng.nextInt(9);
+                // Calcular una nueva posicion (0-8) sin repetir y crear un GameUpdate
+                while(rand == nextPos){
+                    rand = rng.nextInt(9);
+                }
+                nextPos = rand;
                 gu = new GameUpdate(game.getScore(), nextPos);
 
                 // Enviar un mensaje multicast con la actualizacion del juego
@@ -88,12 +99,19 @@ public class GameThread implements Runnable {
 
                 // Esperar una respuesta por 30 segundos
                 try {
-                    // Leer el primer datagrama UDP en llegar
-                    UDPsocket.receive(msgIn);
+                    
+                    do{
+                        // Leer el primer datagrama UDP en llegar
+                        UDPsocket.receive(msgIn);
 
-                    // Identificar que usuario consiguio el punto
-                    uid = (new String(msgIn.getData())).trim();
-                    System.out.println("GT: Punto para: " + uid);
+                        // Identificar que usuario consiguio el punto
+                        message = (new String(msgIn.getData())).trim().split(",", 2);
+                        hitPos = Integer.parseInt(message[0]);
+                        uid = message[1];
+                    }while(hitPos != nextPos);
+                    
+
+                    // System.out.println("GT: Punto para: " + uid);
 
                     // Agregar un punto al usuario ganador
                     game.addPoint(uid);
@@ -101,16 +119,15 @@ public class GameThread implements Runnable {
                     // Revisar si ha terminado el juego
                     finished = game.done();
 
-                    // Esperar 1s para empezar la siguiente ronda
-                    Thread.sleep(1000);
+                    // Esperar 500ms para empezar la siguiente ronda
+                    Thread.sleep(500);
                 } catch (SocketTimeoutException e) {
                     // Si se llega a un timeout sin conseguir respuesta, nadie consigue el punto y
                     // se va a la siguiente ronda
                 }
             }
             // Imprimir el usuario ganador en consola
-            if (uid != null)
-                System.out.println("GT: Gano: " + uid);
+            // if (uid != null) System.out.println("GT: Gano: " + uid);
 
             // Al terminar, envia -1 como siguiente posicion y los puntajes finales
             nextPos = -1;

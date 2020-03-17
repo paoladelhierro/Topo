@@ -34,6 +34,11 @@ public class WAM implements WAMRoom{
     }
 
     @Override
+    public int playerCount() throws RemoteException {
+        return scoreboard.size();
+    }
+
+    @Override
     public int addPoint(String user) throws RemoteException {
         // Agrega 1 punto al jugador con id user
         int score = -1;

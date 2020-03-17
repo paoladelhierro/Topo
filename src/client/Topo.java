@@ -34,7 +34,8 @@ public class Topo extends Thread{
     private DatagramSocket udpSocket;
     private MulticastSocket mtcSocket;
     private DatagramPacket msgIn, msgOut;
-
+    private String roomIP;
+    private int roomPort;
     
     public Topo(javax.swing.JRadioButton[] radiobuttons, javax.swing.ButtonGroup buttons, javax.swing.JDialog alerta){
         this.radiobuttons = radiobuttons;
@@ -52,8 +53,8 @@ public class Topo extends Thread{
         id = this.pantallita.getId();
         
         String[] address = ((String) response.getPayload()).split(",");
-        String roomIP = address[0];
-        int roomPort = Integer.parseInt(address[1]);
+        roomIP = address[0];
+        roomPort = Integer.parseInt(address[1]);
         String mtcIP = address[2];
 
         try {
@@ -65,12 +66,6 @@ public class Topo extends Thread{
             
             byte[] mtcBuffer = new byte[5000];
             msgIn = new DatagramPacket(mtcBuffer, mtcBuffer.length);
-
-
-            byte[] udpBuffer = id.getBytes();
-            msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP), roomPort);
-            
-           
 
         } catch (SocketException ex) {
             Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
@@ -90,6 +85,8 @@ public class Topo extends Thread{
                int j = (Integer)((javax.swing.JRadioButton)evt.getSource()).getClientProperty( "index" );
                if(j == mole && !played){
                     try {
+                        byte[] udpBuffer = (Integer.toString(mole) + "," + id).getBytes();
+                        msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP), roomPort);
                         udpSocket.send(msgOut);
                         played = true;
                    } catch (IOException ex) {
