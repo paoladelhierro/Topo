@@ -5,6 +5,8 @@
  */
 package client;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -20,8 +22,9 @@ import server.TCPComms;
  * @author paoladelhierro
  */
 public class LoginWAM extends javax.swing.JFrame {
-    private TCPComms response;
+    private TCPComms response, request;
     private String id;
+    private ObjectOutputStream out;
 
     /**
      * Creates new form LoginWAM
@@ -29,6 +32,7 @@ public class LoginWAM extends javax.swing.JFrame {
     public LoginWAM() {
         initComponents();
         usrAlert.setVisible(false);
+        
     }
 
     /**
@@ -126,11 +130,11 @@ public class LoginWAM extends javax.swing.JFrame {
         if(id !=  null){
             try{
                 s = new Socket("localhost", 8888);
-                ObjectOutputStream out = new ObjectOutputStream( s.getOutputStream());
+                out = new ObjectOutputStream( s.getOutputStream());
                 ObjectInputStream in = new ObjectInputStream( s.getInputStream());
 
                 // Realizar login
-                TCPComms request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
+                request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
                 out.writeObject(request);
                 response = (TCPComms) in.readObject();
                 if(response.getType() != TCPComms.LOGIN_FAIL){
@@ -148,6 +152,19 @@ public class LoginWAM extends javax.swing.JFrame {
        }else{
             usrAlert.setVisible(true);
         }
+
+        this.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e){
+                try {
+                    request = new TCPComms(TCPComms.LOGOFF_REQUEST, id);
+                    out.writeObject(request);
+                    request = new TCPComms(TCPComms.CLOSE_CONNECTION, null);
+                    out.writeObject(request);
+                } catch (IOException ex) {
+                    Logger.getLogger(LoginWAM.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
        
     }//GEN-LAST:event_loginActionPerformed
 
