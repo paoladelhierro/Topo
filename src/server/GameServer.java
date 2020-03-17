@@ -132,6 +132,7 @@ class Connection implements Runnable {
             String uid;
 
             // Decidir accion dependiendo del tipo de request que se recibio
+            
             switch (r.getType()) {
                 case TCPComms.LOGIN_REQUEST:
                     // Request para agregar un jugador al juego.
