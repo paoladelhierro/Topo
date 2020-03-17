@@ -16,13 +16,13 @@ import server.TCPComms;
 /**
  * stressThread
  */
-public class StressThread implements Runnable{
+public class StressThread implements Runnable {
 
     private String id, serverIP;
     private int serverPort;
     private int totalClients;
 
-    public StressThread(String id, String serverIP, int serverPort, int totalClients){
+    public StressThread(String id, String serverIP, int serverPort, int totalClients) {
         this.id = id;
         this.serverIP = serverIP;
         this.serverPort = serverPort;
@@ -31,21 +31,21 @@ public class StressThread implements Runnable{
 
     @Override
     public void run() {
-        
+
         Socket s = null;
         MulticastSocket mtcSocket = null;
         DatagramSocket udpSocket = null;
         try {
-            s = new Socket(serverIP, serverPort); 
-            ObjectOutputStream out = new ObjectOutputStream( s.getOutputStream());
-            ObjectInputStream in = new ObjectInputStream( s.getInputStream()); 
-            
+            s = new Socket(serverIP, serverPort);
+            ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
+            ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+
             // Realizar login
             TCPComms request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
-            out.writeObject(request); 
+            out.writeObject(request);
             TCPComms response = (TCPComms) in.readObject();
-            while(response.getType() == TCPComms.LOGIN_FAIL){
-                //Cambiar username y volver a intentar
+            while (response.getType() == TCPComms.LOGIN_FAIL) {
+                // Cambiar username y volver a intentar
 
             }
 
@@ -57,17 +57,17 @@ public class StressThread implements Runnable{
             // Sockets para comms con el juego
             udpSocket = new DatagramSocket();
 
-            InetAddress group = InetAddress.getByName(mtcIP); // destination multicast group 
+            InetAddress group = InetAddress.getByName(mtcIP); // destination multicast group
             mtcSocket = new MulticastSocket(roomPort + 1);
-       	    mtcSocket.joinGroup(group);
+            mtcSocket.joinGroup(group);
 
-            //Entrar en el juego
+            // Entrar en el juego
             byte[] mtcBuffer = new byte[5000];
             DatagramPacket msgIn = new DatagramPacket(mtcBuffer, mtcBuffer.length);
-            
 
             byte[] udpBuffer = id.getBytes();
-            DatagramPacket msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP), roomPort);
+            DatagramPacket msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP),
+                    roomPort);
 
             int nextPos;
             String scores;
@@ -79,7 +79,7 @@ public class StressThread implements Runnable{
             tic = System.currentTimeMillis();
             sum = 0;
             sum2 = 0;
-            
+
             message = (new String(msgIn.getData())).trim().split("&", 2);
             nextPos = Integer.parseInt(message[0]);
             scores = message[1];
@@ -88,22 +88,33 @@ public class StressThread implements Runnable{
             int n = 0;
             Random rng = new Random();
 
-            while(nextPos != -1){
+            while (nextPos != -1) {
                 // Espera hasta un segundo antes de enviar tu respuesta
                 // Thread.sleep(rng.nextInt(1000));
                 udpSocket.send(msgOut);
-                
 
                 mtcSocket.receive(msgIn);
                 toc = System.currentTimeMillis() - tic;
                 tic = System.currentTimeMillis();
                 sum += toc;
-                sum2 += toc*toc;
+                sum2 += toc * toc;
                 n++;
 
                 message = (new String(msgIn.getData())).trim().split("&", 2);
                 nextPos = Integer.parseInt(message[0]);
                 scores = message[1];
+
+                // 5% de probabilidad de salirse del juego y volver a entrar
+                if (rng.nextDouble() >= 0.6) {
+                    request = new TCPComms(TCPComms.LOGOFF_REQUEST, id);
+                    out.writeObject(request);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    request = new TCPComms(TCPComms.LOGIN_REQUEST, id);
+                }
             };
             
             System.out.println(String.format("%d,%d,%g,%g", totalClients, n, sum, sum2));
