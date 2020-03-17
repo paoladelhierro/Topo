@@ -29,6 +29,11 @@ public class Topo extends Thread{
     private Pantallita pantallita;
     private TCPComms response;
     private String id;
+    private boolean played;
+    private int mole;
+    private DatagramSocket udpSocket;
+    private MulticastSocket mtcSocket;
+    private DatagramPacket msgIn, msgOut;
 
     
     public Topo(javax.swing.JRadioButton[] radiobuttons, javax.swing.ButtonGroup buttons, javax.swing.JDialog alerta){
@@ -45,35 +50,66 @@ public class Topo extends Thread{
         scoreboard = this.pantallita.getScore();
         response = this.pantallita.getResponse();
         id = this.pantallita.getId();
-    }
-
-
-    @Override
-    public void run(){
-   
+        
         String[] address = ((String) response.getPayload()).split(",");
         String roomIP = address[0];
         int roomPort = Integer.parseInt(address[1]);
         String mtcIP = address[2];
         System.out.println("ya estoy en topo");
         System.out.println(mtcIP);
+        
         try {
             // Sockets para comms con el juego
-            DatagramSocket udpSocket = new DatagramSocket();
+            udpSocket = new DatagramSocket();
             InetAddress group = InetAddress.getByName(mtcIP); // destination multicast group 
-            MulticastSocket mtcSocket = new MulticastSocket(roomPort + 1);
+            mtcSocket = new MulticastSocket(roomPort + 1);
             mtcSocket.joinGroup(group);
             
-
-            //Entrar en el juego
             byte[] mtcBuffer = new byte[5000];
-            DatagramPacket msgIn = new DatagramPacket(mtcBuffer, mtcBuffer.length);
+            msgIn = new DatagramPacket(mtcBuffer, mtcBuffer.length);
 
 
             byte[] udpBuffer = id.getBytes();
-            DatagramPacket msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP), roomPort);
+            msgOut = new DatagramPacket(udpBuffer, udpBuffer.length, InetAddress.getByName(roomIP), roomPort);
             
-            int mole;
+           
+
+        } catch (SocketException ex) {
+            Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+  
+
+    }
+    
+    public void actionListeners(){
+        for(int i=0; i<9; i++){
+            radiobuttons[i].putClientProperty("index", i);
+            radiobuttons[i].addActionListener((java.awt.event.ActionEvent evt) -> {
+               int j = (Integer)((javax.swing.JRadioButton)evt.getSource()).getClientProperty( "index" );
+               if(j == mole){
+                    try {
+                        udpSocket.send(msgOut);
+                   } catch (IOException ex) {
+                       Logger.getLogger(Topo.class.getName()).log(Level.SEVERE, null, ex);
+                   }
+               }
+            });
+        }
+    }
+    
+    
+
+
+    @Override
+    public void run(){
+        actionListeners();
+        try {
+            //Entrar en el juego
+
             String scores;
             String[] message;
             
@@ -88,10 +124,6 @@ public class Topo extends Thread{
             while(mole != -1){
                 radiobuttons[mole].setText("(u.u)");
                 Thread.sleep(2000);
-                
-                if(radiobuttons[mole].isSelected())
-                    udpSocket.send(msgOut);
-                
                 mtcSocket.receive(msgIn);
                 message = (new String(msgIn.getData())).trim().split("&", 2);
                 buttons.clearSelection();
