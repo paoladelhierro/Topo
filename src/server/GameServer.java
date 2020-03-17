@@ -73,6 +73,7 @@ class Connection implements Runnable {
         // Setup para inicializar el hilo de ejecucion del juego
         if (address.equals("")) {
             try {
+                System.out.println("GS: Empezando un juego nuevo.");
                 // Se definen la direccion IP, puerto y direccion multicast para el juego.
                 String hostIP = Inet4Address.getLocalHost().getHostAddress();
                 int hostPort = 7777;
@@ -121,8 +122,7 @@ class Connection implements Runnable {
     public void run() {
         // Hilo de ejecucion para atender conexiones
         try {
-            // Inicializar el juego.
-            init();
+            
 
             // Obtener el registro RMI
             Registry reg = LocateRegistry.getRegistry("localhost");
@@ -140,6 +140,8 @@ class Connection implements Runnable {
                         uid = (String) r.getPayload();
                         if(!users.contains(uid) && !uid.equals("")){
                             // Si el username esta disponible, agregarlo al arreglo de usernames y al juego
+                            // Inicializar el juego.
+                            init();
                             System.out.println("GS: " + uid + " login");
                             users.add(uid);
                             ((WAMRoom) reg.lookup("WAM")).addUser(uid);
