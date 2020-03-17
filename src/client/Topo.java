@@ -87,7 +87,7 @@ public class Topo extends Thread{
             
             while(mole != -1){
                 radiobuttons[mole].setText("(u.u)");
-                this.sleep(700);
+                Thread.sleep(2000);
                 
                 if(radiobuttons[mole].isSelected())
                     udpSocket.send(msgOut);

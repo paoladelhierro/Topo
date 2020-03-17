@@ -137,7 +137,7 @@ class Connection implements Runnable {
                     // Request para agregar un jugador al juego.
                     uid = (String) r.getPayload();
 
-                    if(!users.contains(uid)){
+                    if(!users.contains(uid) && !uid.equals("")){
                         // Si el username esta disponible, agregarlo al arreglo de usernames y al juego
                         users.add(uid);
                         ((WAMRoom) reg.lookup("WAM")).addUser(uid);
