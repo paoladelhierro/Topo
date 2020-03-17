@@ -5,8 +5,6 @@ import java.io.ObjectOutputStream;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.rmi.registry.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -22,10 +20,18 @@ public class GameServer {
         // Socket TCP para recibir conexiones de clientes
         ServerSocket listenSocket = null;
         try {
+            
+
             // Levantar un socket TCP en el puerto 8888, y levantar el registro RMI en el servidor.
             int serverPort = 8888;
             LocateRegistry.createRegistry(1099);
             listenSocket = new ServerSocket(serverPort);
+
+            // Levantar instancia de Whack A Mole en RMI
+            WAM wam = new WAM(3);
+            Registry reg = LocateRegistry.getRegistry("localhost");
+            WAMRoom stub = (WAMRoom) UnicastRemoteObject.exportObject(wam, 0);
+            reg.rebind("WAM", stub);
 
             // Eschuchar para nuevas conexiones
             while (true) {
@@ -35,7 +41,8 @@ public class GameServer {
                 c.start();
             }
         } catch (IOException e) {
-            System.out.println("Listen :" + e.getMessage());
+            System.out.println("Listen: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             try {
                 if (listenSocket != null)
@@ -79,12 +86,6 @@ class Connection implements Runnable {
                 int hostPort = 7777;
                 String multiIP = "228.229.230.231";
 
-                // Levantar instancia de Whack A Mole en RMI
-                WAM wam = new WAM(3);
-                Registry reg = LocateRegistry.getRegistry("localhost");
-                WAMRoom stub = (WAMRoom) UnicastRemoteObject.exportObject(wam, 0);
-                reg.rebind("WAM", stub);
-
                 // Levantar hilo para control del juego
                 Thread gt = new Thread(new GameThread(hostPort, multiIP));
                 gt.start();
@@ -100,19 +101,10 @@ class Connection implements Runnable {
     private static synchronized void reset() {
         // Reiniciar el servidor una vez que termina el juego.
         if (!address.equals("")) {
-            Registry reg;
-            try {
-                // Borrar la direccion del juego, la lista de usuarios en el juego y reiniciar el juego WAM en RMI
-                address = "";
-                users = new ArrayList<String>();
-                reg = LocateRegistry.getRegistry("localhost");
-                ((WAMRoom) reg.lookup("WAM")).reset();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (NotBoundException e) {
-                e.printStackTrace();
-            }
             
+            // Borrar la direccion del juego, la lista de usuarios en el juego y reiniciar el juego WAM en RMI
+            users.clear();
+            address = "";
 
         }
     }
@@ -135,12 +127,16 @@ class Connection implements Runnable {
             Registry reg = LocateRegistry.getRegistry("localhost");
             
             // Leer un objeto de la conexion TCP
-            TCPComms r = (TCPComms) in.readObject();
+            TCPComms r;
             
 
             // Decidir accion dependiendo del tipo de request que se recibio
-            int request_type = r.getType();
-            while(request_type != TCPComms.CLOSE_CONNECTION){
+            int request_type;
+            boolean done = false;
+
+            while(!done){
+                r = (TCPComms) in.readObject();
+                request_type = r.getType();
                 switch (request_type) {
                     case TCPComms.LOGIN_REQUEST:
                         // Request para agregar un jugador al juego.
@@ -172,12 +168,12 @@ class Connection implements Runnable {
                     case TCPComms.FINISH_GAME:
                         // Reiniciar el servidor para empezar otro juego
                         reset();
+                    case TCPComms.CLOSE_CONNECTION:
+                        done = true;
                         break;
                     default:
                         break;
                 }
-                r = (TCPComms) in.readObject();
-                request_type = r.getType();
             }
             
 

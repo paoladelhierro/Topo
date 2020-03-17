@@ -3,7 +3,7 @@ package stress;
 /**
  * Stresser
  */
-public class Stresser {
+public class GameStresser {
 
     public static void main(String[] args) {
         int n;
@@ -16,16 +16,10 @@ public class Stresser {
         int TCPPort = 8888;
         
         Thread t;
-        String id, id2;
-        int drops = 25;
+        String id;
 
         for (int i = 0; i < n; i++) {
-            // if(i%10 == 0){
-            //     // Por cada 10 hilos, levanta un hilo 'dropper', que estresa el login
-            //     id2 = "d" + Integer.toString(i);
-            //     t = new Thread(new DropperThread(drops, id2, TCPHost, TCPPort));
-            //     t.start();
-            // }
+            
             id = "p" + Integer.toString(i);
             t = new Thread(new StressThread(id, TCPHost, TCPPort, n));
             t.start();

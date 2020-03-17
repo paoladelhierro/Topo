@@ -89,9 +89,6 @@ public class StressThread implements Runnable {
 
             // n = cuantos mensajes recibe
             int n = 0;
-            Random rng = new Random();
-            boolean skip = false;
-            int disconnects = 0;
 
             while (nextPos != -1) {
                 // Espera hasta un segundo antes de enviar tu respuesta
@@ -101,16 +98,13 @@ public class StressThread implements Runnable {
                 udpSocket.send(msgOut);
 
                 mtcSocket.receive(msgIn);
-                if(!skip){
-                    toc = System.currentTimeMillis() - tic;
-                    tic = System.currentTimeMillis();
-                    sum += toc;
-                    sum2 += toc * toc;
-                    n++;
-                }else{
-                    skip = false;
-                    tic = System.currentTimeMillis();
-                }
+                
+                toc = System.currentTimeMillis() - tic;
+                tic = System.currentTimeMillis();
+                sum += toc;
+                sum2 += toc * toc;
+                n++;
+                
                 
 
                 message = (new String(msgIn.getData())).trim().split("&", 2);

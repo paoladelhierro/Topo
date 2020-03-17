@@ -29,6 +29,7 @@ public class GameThread implements Runnable {
 
     @Override
     public void run() {
+        
         // Socket para enviar mensajes multicast a todos los jugadores
         MulticastSocket multiSocket = null;
         // Socket para recibir mensajes UDP de los jugadores
@@ -44,16 +45,17 @@ public class GameThread implements Runnable {
 
             // Crear socket udp
             UDPsocket = new DatagramSocket(hostPort);
-            // Timeout de 30s para cada ronda
+            // Timeout de 10s para cada ronda
             UDPsocket.setSoTimeout(10000);
 
             // Conectarse a RMI y conseguir la instancia del juego
             Registry r = LocateRegistry.getRegistry("localhost");
             WAMRoom game = (WAMRoom) r.lookup("WAM");
 
-            // Esperar 30 segundos para que se unan jugadores
+            // Esperar 15 segundos para que se unan jugadores
             // System.out.println("GT: Durmiendo 30s para esperar a los jugadores.");
-            Thread.sleep(10000);
+            Thread.sleep(15000);
+            // Esperar a que haya al menos 1 jugador
             int playerCount = game.playerCount();
             while(playerCount == 0){
                 playerCount = game.playerCount();
@@ -69,7 +71,7 @@ public class GameThread implements Runnable {
 
             // gu contiene las actualizaciones del juego: la siguiente posicion para el topo
             // y el puntaje de cada jugador
-            GameUpdate gu;
+            String gu;
             int nextPos, rand;
             nextPos = -1;
             rand = -1;
@@ -90,10 +92,10 @@ public class GameThread implements Runnable {
                     rand = rng.nextInt(9);
                 }
                 nextPos = rand;
-                gu = new GameUpdate(game.getScore(), nextPos);
+                gu = Integer.toString(nextPos) + "&" + game.getScore();
 
                 // Enviar un mensaje multicast con la actualizacion del juego
-                mtcBuf = gu.toString().getBytes();
+                mtcBuf = gu.getBytes();
                 msgOut = new DatagramPacket(mtcBuf, mtcBuf.length, group, hostPort + 1);
                 multiSocket.send(msgOut);
 
@@ -131,19 +133,19 @@ public class GameThread implements Runnable {
 
             // Al terminar, envia -1 como siguiente posicion y los puntajes finales
             nextPos = -1;
-            gu = new GameUpdate(game.getScore(), nextPos);
-            mtcBuf = gu.toString().getBytes();
+            gu = Integer.toString(nextPos) + "&" + game.getScore();;
+            mtcBuf = gu.getBytes();
             msgOut = new DatagramPacket(mtcBuf, mtcBuf.length, group, hostPort + 1);
             multiSocket.send(msgOut);
+
+            game.reset();
 
             // Aviza al servidor TCP que el juego termino para poder empezar uno nuevo
             s = new Socket("localhost", 8888);
             ObjectOutputStream out = new ObjectOutputStream(s.getOutputStream());
             ObjectInputStream in = new ObjectInputStream(s.getInputStream());
+            
             TCPComms request = new TCPComms(TCPComms.FINISH_GAME, null);
-            out.writeObject(request);
-
-            request = new TCPComms(TCPComms.CLOSE_CONNECTION, null);
             out.writeObject(request);
 
         } catch (Exception e) {

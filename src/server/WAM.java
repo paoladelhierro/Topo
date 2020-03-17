@@ -3,6 +3,7 @@ package server;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import interfaces.WAMRoom;
 
@@ -24,10 +25,12 @@ public class WAM implements WAMRoom{
         this.finished = false;
     }
 
+
     @Override
     public void addUser(String user) throws RemoteException {
         // Agrega un jugador con id user al juego
         Player p = new Player(user);
+
         if(!this.scoreboard.contains(p)){
             this.scoreboard.add(p);
         }
@@ -55,10 +58,10 @@ public class WAM implements WAMRoom{
     }
 
     @Override
-    public ArrayList<Player> getScore() throws RemoteException {
+    public String getScore() throws RemoteException {
         // Regresa la lista de jugadores ordenados por puntaje
-        Collections.sort(this.scoreboard, new Player.SortByScore());
-        return this.scoreboard;
+        if(scoreboard.size() > 1) scoreboard.sort(new Player.SortByScore());
+        return this.scoreboard.toString();
     }
 
     @Override
@@ -69,9 +72,8 @@ public class WAM implements WAMRoom{
     @Override
     public void reset() throws RemoteException {
         // Reinicia el juego con el mismo goal
-        this.scoreboard = new ArrayList<Player>();
+        this.scoreboard.clear();
         this.finished = false;
     }
-
     
 }

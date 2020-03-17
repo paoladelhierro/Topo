@@ -1,4 +1,9 @@
 
-foreach($i in 5, 10, 15, 20, 30){
-1..10 | % {& 'C:\Users\Mike\.vscode\extensions\vscjava.vscode-java-debug-0.25.1\scripts\launcher.bat' 'C:\Program Files\Java\jdk1.8.0_141\bin\java.exe' '-Dfile.encoding=UTF-8' '-cp' 'C:\Users\Mike\AppData\Roaming\Code\User\workspaceStorage\993f575f6400fdd30996478c09b529cb\redhat.java\jdt_ws\Topo_56e2db41\bin' 'stress.Stresser' $i | Out-File stresstest/results.csv -Append -Encoding UTF8}
+foreach($i in 200){
+1..10 | % {& 'C:\Users\Mike\.vscode\extensions\vscjava.vscode-java-debug-0.25.1\scripts\launcher.bat' 'C:\Program Files\Java\jdk1.8.0_141\bin\java.exe' '-Dfile.encoding=UTF-8' '-cp' 'C:\Users\Mike\AppData\Roaming\Code\User\workspaceStorage\993f575f6400fdd30996478c09b529cb\redhat.java\jdt_ws\Topo_56e2db41\bin' 'stress.GameStresser' $i | Out-File stresstest/results_game.csv -Append -Encoding UTF8}
+}
+
+
+foreach($i in 400, 500){
+1..10 | % {& 'C:\Users\Mike\.vscode\extensions\vscjava.vscode-java-debug-0.25.1\scripts\launcher.bat' 'C:\Program Files\Java\jdk1.8.0_141\bin\java.exe' '-Dfile.encoding=UTF-8' '-cp' 'C:\Users\Mike\AppData\Roaming\Code\User\workspaceStorage\993f575f6400fdd30996478c09b529cb\redhat.java\jdt_ws\Topo_56e2db41\bin' 'stress.LoggerStresser' $i | Out-File stresstest/results_logging.csv -Append -Encoding UTF8}
 }
