@@ -61,7 +61,10 @@ public class WAM implements WAMRoom{
     public String getScore() throws RemoteException {
         // Regresa la lista de jugadores ordenados por puntaje
         if(scoreboard.size() > 1) scoreboard.sort(new Player.SortByScore());
-        return this.scoreboard.toString();
+        String res = this.scoreboard.toString();
+        res = res.replace(", ", "\n");
+        res = res.substring(1, res.length() - 1);
+        return res;
     }
 
     @Override

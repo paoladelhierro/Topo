@@ -28,7 +28,7 @@ public class GameServer {
             listenSocket = new ServerSocket(serverPort);
 
             // Levantar instancia de Whack A Mole en RMI
-            WAM wam = new WAM(3);
+            WAM wam = new WAM(5);
             Registry reg = LocateRegistry.getRegistry("localhost");
             WAMRoom stub = (WAMRoom) UnicastRemoteObject.exportObject(wam, 0);
             reg.rebind("WAM", stub);

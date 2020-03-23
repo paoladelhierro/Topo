@@ -16,6 +16,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import server.TCPComms;
+import java.awt.FlowLayout;
 
 /**
  *
@@ -25,7 +26,7 @@ public class Topo extends Thread{
     private javax.swing.JRadioButton[] radiobuttons = new javax.swing.JRadioButton[9];
     private javax.swing.JDialog alerta;
     private javax.swing.ButtonGroup buttons;
-    private javax.swing.JLabel scoreboard;
+    private javax.swing.JTextArea scoreboard;
     private Pantallita pantallita;
     private TCPComms response;
     private String id;
@@ -48,9 +49,13 @@ public class Topo extends Thread{
         radiobuttons = this.pantallita.getRadiobuttons();
         buttons = this.pantallita.getButtonGroup1();
         alerta = this.pantallita.getAlerta();
+        alerta.setLayout(new FlowLayout());
         scoreboard = this.pantallita.getScore();
+        scoreboard.setEditable(false);
+        
         response = this.pantallita.getResponse();
         id = this.pantallita.getId();
+        this.pantallita.setTitle(id);
         
         String[] address = ((String) response.getPayload()).split(",");
         roomIP = address[0];
@@ -131,6 +136,7 @@ public class Topo extends Thread{
                 played =false;
             }  
             alerta.setTitle("Acabo el juego");
+            
             alerta.add(scoreboard);
             alerta.setVisible(true);
             pantallita.dispose();

@@ -63,13 +63,13 @@ public class Player implements Serializable, Comparable<Player>{
     public static class SortByScore implements Comparator<Player>{
         @Override
         public int compare(Player o1, Player o2) {
-            return o1.score - o2.score;
+            return o2.score - o1.score;
         }
     }
 
     @Override
     public String toString() {
-        return String.format("%s\t%d", uid, score);
+        return String.format("%s - %d", uid, score);
     }
 
 
